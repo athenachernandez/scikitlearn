@@ -10,8 +10,23 @@ from matplotlib import pyplot
 import pandas as pd
 import numpy as np
 
-data = pd.read_csv('dataset.csv')
-data.head()
+complete_df = pd.read_csv('dataset.csv')
+# df.head()
+print(complete_df)
+
+rows_used = int(len(complete_df.index) * .1)
+
+df = complete_df.loc[0:rows_used][:]
+
+df['Type'] == 1
+# df = df[(df.index > np.percentile(df.index, 10)) & (df.index <= np.percentile(df.index, 10))]
+print(df)
+
+df.loc[(df['Type'] == 0) & (df['col2'] < value)]
+
+
+# create 0 df, grab 10%; create 1 df, grab 10%; when creating test df training will shuffle randomize
+
 
 ## Leave out first 10% or 90% for both benign and malicious
 
