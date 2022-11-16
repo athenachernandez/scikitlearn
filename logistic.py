@@ -1,6 +1,6 @@
 
 # Scikit-learn ver. 0.23.2
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import plot_confusion_matrix
@@ -28,7 +28,7 @@ def main():
         df_subset_1 = df_subset_1.head(len(df_subset_0))
 
     df = pd.concat([df_subset_0, df_subset_1]).dropna()
-    # df = df.sample(frac=1, random_state=1).reset_index()
+    df = df.sample(frac=1, random_state=1).reset_index()
     print(df.head(), len(df))
 
     digitsX = df.iloc[:, [2, 6, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]]
@@ -36,7 +36,10 @@ def main():
     print(digitsX, digitsY)
     trainX, testX, trainY, testY = train_test_split(digitsX, digitsY, test_size = 0.3, shuffle = True) # Do i need to shuffle again
 
-    classifier = LogisticRegression(max_iter = 10000) # Other paremeters - see if better results, 
+    classifier = LogisticRegression(max_iter = 10000, random_state = 10) # Other paremeters - see if better results, 
+    # classifier = RidgeClassifier(max_iter = 10000, random_state = 10) # Other paremeters - see if better results, 
+    # SGD Classifier (check out the different loss functions!), Perceptron, Support Vector Machine Classifier (try different kernels!), Linear Support Vector Machine Classifier (simil
+    
     classifier.fit(trainX, trainY)
     preds = classifier.predict(testX)
 
@@ -49,10 +52,6 @@ def main():
 
     plot_confusion_matrix(classifier, testX, testY)
     pyplot.show()
-
-    # Split data into test and training
-    # Perform what type of classification
-    # Graph ? Check Dr. J's GitHub
 
 if __name__ == '__main__':
     main()
