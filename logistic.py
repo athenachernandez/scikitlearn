@@ -10,21 +10,42 @@ from matplotlib import pyplot
 import pandas as pd
 import numpy as np
 
-complete_df = pd.read_csv('dataset.csv')
-# df.head()
-print(complete_df)
+def create_df_subset(raw_df, type):
+    df_subset = raw_df[raw_df["Type"] == type]
+    df_subset = df_subset.sample(frac=1).reset_index(drop=True)
 
-rows_used = int(len(complete_df.index) * .1)
+    return df_subset
 
-df = complete_df.loc[0:rows_used][:]
+def main():
+    raw_df = pd.read_csv('dataset.csv') # Ask about df naming conventions
+    df_subset_0 = create_df_subset(raw_df, 0)
+    df_subset_1 = create_df_subset(raw_df, 1)
 
-df['Type'] == 1
-# df = df[(df.index > np.percentile(df.index, 10)) & (df.index <= np.percentile(df.index, 10))]
-print(df)
+    # Choose and cut length of dataset to whichever is shorter
+    if len(df_subset_0) > len(df_subset_1):
+        df_subset_0 = df_subset_0.head(len(df_subset_1))
+    else:
+        df_subset_1 = df_subset_1.head(len(df_subset_0))
 
-df.loc[(df['Type'] == 0) & (df['col2'] < value)]
+    df = pd.concat([df_subset_0, df_subset_1])
+    print(df.head(), len(df))
+if __name__ == '__main__':
+    main()
 
+# rows_used = int(len(complete_df.index) * .1)
 
+# # df.head()
+# print(complete_df)
+
+# rows_used = int(len(complete_df.index) * .1)
+
+# df = complete_df.loc[0:rows_used][:]
+
+# df['Type'] == 1
+# # df = df[(df.index > np.percentile(df.index, 10)) & (df.index <= np.percentile(df.index, 10))]
+# print(df)
+
+# df.loc[(df['Type'] == 0) & (df['col2'] < value)]
 # create 0 df, grab 10%; create 1 df, grab 10%; when creating test df training will shuffle randomize
 
 
