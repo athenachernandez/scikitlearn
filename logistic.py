@@ -27,9 +27,28 @@ def main():
     else:
         df_subset_1 = df_subset_1.head(len(df_subset_0))
 
-    df = pd.concat([df_subset_0, df_subset_1])
-    df = df.sample(frac=1, random_state=1).reset_index()
+    df = pd.concat([df_subset_0, df_subset_1]).dropna()
+    # df = df.sample(frac=1, random_state=1).reset_index()
     print(df.head(), len(df))
+
+    digitsX = df.iloc[:, [2, 6, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]]
+    digitsY = df.iloc[:, 21]
+    print(digitsX, digitsY)
+    trainX, testX, trainY, testY = train_test_split(digitsX, digitsY, test_size = 0.3, shuffle = True) # Do i need to shuffle again
+
+    classifier = LogisticRegression(max_iter = 10000) # Other paremeters - see if better results, 
+    classifier.fit(trainX, trainY)
+    preds = classifier.predict(testX)
+
+    correct = 0
+    incorrect = 0
+    for pred, gt in zip(preds, testY):
+        if pred == gt: correct += 1
+        else: incorrect += 1
+    print(f"Correct: {correct}, Incorrect: {incorrect}, % Correct: {correct/(correct + incorrect): 5.2}")
+
+    plot_confusion_matrix(classifier, testX, testY)
+    pyplot.show()
 
     # Split data into test and training
     # Perform what type of classification
