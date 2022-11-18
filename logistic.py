@@ -1,14 +1,23 @@
 
 # Scikit-learn ver. 0.23.2
-from sklearn.linear_model import LogisticRegression, RidgeClassifier
+from sklearn.linear_model import LogisticRegression, RidgeClassifier, Perceptron
+from sklearn.svm import SVC
 from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import plot_confusion_matrix
 # matplotlib 3.3.1
-from matplotlib import pyplot
+import matplotlib.pyplot as plt
 
 import pandas as pd
 import numpy as np
+
+def split_data(df):
+    digitsX = df.iloc[:, [2, 6, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]]
+    digitsY = df.iloc[:, 21]
+    print(digitsX, digitsY)
+    trainX, testX, trainY, testY = train_test_split(digitsX, digitsY, test_size = 0.3, shuffle = True) # Do i need to shuffle again
+
+    return trainX, testX, trainY, testY
 
 def create_df_subset(raw_df, type):
     df_subset = raw_df[raw_df["Type"] == type]
@@ -31,27 +40,44 @@ def main():
     df = df.sample(frac=1, random_state=1).reset_index()
     print(df.head(), len(df))
 
-    digitsX = df.iloc[:, [2, 6, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]]
-    digitsY = df.iloc[:, 21]
-    print(digitsX, digitsY)
-    trainX, testX, trainY, testY = train_test_split(digitsX, digitsY, test_size = 0.3, shuffle = True) # Do i need to shuffle again
-
-    classifier = LogisticRegression(max_iter = 10000, random_state = 10) # Other paremeters - see if better results, 
-    # classifier = RidgeClassifier(max_iter = 10000, random_state = 10) # Other paremeters - see if better results, 
-    # SGD Classifier (check out the different loss functions!), Perceptron, Support Vector Machine Classifier (try different kernels!), Linear Support Vector Machine Classifier (simil
+    trainX, testX, trainY, testY = split_data(df)
     
-    classifier.fit(trainX, trainY)
-    preds = classifier.predict(testX)
+    while True:
+        type = input("What type of classifier do you want to try out? Press enter to quit. ") # Incoroporate colors in command prompt
+        if type == "logistic regression":
+            classifier = LogisticRegression(max_iter = 10000)
+        elif type == "ridge classifier":
+            classifier = RidgeClassifier(max_iter = 10000)
+        elif type == "perceptron": # Bad b/c not linearly separable
+            classifier = Perceptron(max_iter = 10000)
+        elif type == "svm classifier": # Bad b/c not linearly separable
+            classifier = SVC(max_iter = 10000)
+        else:
+            break
+    
+        classifier.fit(trainX, trainY)
+        preds = classifier.predict(testX)
 
-    correct = 0
-    incorrect = 0
-    for pred, gt in zip(preds, testY):
-        if pred == gt: correct += 1
-        else: incorrect += 1
-    print(f"Correct: {correct}, Incorrect: {incorrect}, % Correct: {correct/(correct + incorrect): 5.2}")
+        correct = 0
+        incorrect = 0
+        for pred, gt in zip(preds, testY):
+            if pred == gt: correct += 1
+            else: incorrect += 1
+        print(f"# Correct: {correct}, # Incorrect: {incorrect}, Accuracy: {correct/(correct + incorrect): 5.2}")
 
-    plot_confusion_matrix(classifier, testX, testY)
-    pyplot.show()
+        plot_confusion_matrix(classifier, testX, testY)
+        plt.show()
+
+        fig, ax = plt.subplots()
+        colors = {0:'green', 1:'red'}
+
+        # DNS_QUERY_TIMES
+        ax.scatter(df['NUMBER_SPECIAL_CHARACTERS'], df['DNS_QUERY_TIMES'], c=df['Type'].map(colors))
+        plt.xlabel('NUMBER_SPECIAL_CHARACTERS') 
+        plt.ylabel('DNS_QUERY_TIMES') 
+        plt.title("DNS_QUERY_TIMES vs. NUMBER_SPECIAL_CHARACTERS")
+        plt.show()
+
 
 if __name__ == '__main__':
     main()
