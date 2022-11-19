@@ -1,6 +1,10 @@
 # scikit-learn Project 🦃
 - Centered around classifiying whether a website was benign (type 0) or malicious (type 1)
 ## Features 😎
+- Used <b>pandas</b> to create a useable dataset
+  - Used an equal about of type 0 and 1 rows
+  - Dropped null values
+  - Shuffled these values and reset the dataframe's index
 - Classifiers with approximately <b>80-90% accuracy</b>
   - Logistic regression
   - Ridge classifier
